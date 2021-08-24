@@ -100,7 +100,14 @@ tourSchema.pre(/^find/, function (next) {
 
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query has took  ${Date.now() - this.start} milliseconds !`);
-  console.log(docs);
+  //console.log(docs);
+  next();
+});
+
+//AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); //we use unshift to add to the bigigning of an array
+  console.log(this.pipeline()); //this point to the current aggrigation object
   next();
 });
 //to creat the model using the schema

@@ -209,7 +209,7 @@ exports.getTourStats = async (req, res) => {
         },
       },
       {
-        $sort: { avgPrice: -1 }, //+1 from down to up and -1 from up to down
+        $sort: { avgPrice: 1 }, //+1 from down to up and -1 from up to down
       },
       // {
       //   $match:{_id:{$ne: 'EASY'}}
@@ -256,18 +256,18 @@ exports.getMonthlyPlan = async (req, res) => {
         $addFields: { month: '$_id' },
       },
       {
-        $project:{
-          _id:0,//to show or notthe id by using (0 or 1)
-        }
+        $project: {
+          _id: 0, //to show or notthe id by using (0 or 1)
+        },
       },
       {
-        $sort:{
-          numTourStarts:-1,//we can use 1 or -1 to sort them -1 start with the highest
-        }
+        $sort: {
+          numTourStarts: -1, //we can use 1 or -1 to sort them -1 start with the highest
+        },
       },
       {
-        $limit:12
-      }
+        $limit: 12,
+      },
     ]);
     res.status(200).json({
       status: 'success',
