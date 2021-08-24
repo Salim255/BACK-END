@@ -1,6 +1,6 @@
 const mongoose = require('mongoose'); //To allow our Node code to access and interact with the a mongoDB database
 const slugify = require('slugify');
-
+//const validator = require('validator');
 //to creat the schema
 const tourSchema = new mongoose.Schema(
   {
@@ -9,6 +9,12 @@ const tourSchema = new mongoose.Schema(
       trim: true, //will remove all the white space in the begining and the end of the string
       required: [true, 'A tour must have a name'], //we call this validater
       unique: true,
+      maxlength: [40, 'A tour name must have less or equal than  40 caracters'],
+      minlength: [
+        10,
+        'A tour name must have more or equal than  10 characters',
+      ]
+      //validate: [validator.isAlpha, 'Tour name must only contain charaters'], //its a fucntion to call ..,
     },
     slug: String,
 
@@ -23,10 +29,17 @@ const tourSchema = new mongoose.Schema(
     difficulty: {
       type: String,
       required: [true, 'A tour must have a difficulty'],
+      enum: {
+        //enum is only for strings
+        values: ['easy', 'medium', 'difficult'], //here we pass the values that are allowed
+        message: 'Difficulty is either:  easy or medium or  difficult',
+      },
     },
     ratingsAverage: {
       type: Number,
       default: 4.5,
+      min: [1, 'Rating must be above 1.0'],
+      max: [5, 'Rating must be below 5.0'],
     },
     ratingsQuantity: {
       type: Number,
@@ -36,7 +49,16 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'A tour must have a price'],
     },
-    priceDiscount: Number,
+    priceDiscount: {
+      type: Number,
+      validate: {
+        //his only point to the current doc in new document creation, but not with update
+        validator: function (discountValue) {
+          return discountValue < this.price; //we trigger validation error when the return is false
+        },
+        message: 'Discount price({VALUE}) should be below to the regular price', //VALUE have access to the realy value
+      },
+    },
     summary: {
       type: String,
       trim: true, //will remove all the white space in the begining and the end of the string
