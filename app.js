@@ -25,10 +25,7 @@ app.use(express.json());
 
 app.use(express.static(`${__dirname}/public`)); //in order to serve an static file
 //create myown midleware
-app.use((req, res, next) => {
-  console.log('Hello from midleware');
-  next();
-});
+
 
 app.use((req, res, next) => {
   req.SalimTime = new Date().toISOString();
@@ -36,18 +33,34 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.get('/', (req, res) => {
-//   // res.status(200).send('Hello from the server side');
-//   res.status(200).json({ message: 'Hello from the server side', app: 'Natours' });
-// });
 
-// app.post('/', (req, res)=>{
-//  res.send('you can post to this URL');
-// })
 
 //In order to connect these two route with the app, we call this mounting a new router in the route
 app.use('/api/v1/tours', tourRouter);
 //o route with the app, we call this mounting a new router in the route
 app.use('/api/v1/users', userRouter);
+
+app.all('*',(req, res, next)=>{
+  //  res.status(404).json({
+  //    status:'fail',
+  //    message:`Can't find ${req.originalUrl} on this server`
+  //  });
+
+  const err = new Error(`Can't find ${req.originalUrl} on this server`);//error object
+  err.status = 'fail';
+  err.statusCode = 404;
+
+  next(err);//when we pass an argument to the next(), exress will undrestand that htis an error so the application will go dirct to the global error handler
+});//all means for all http methode(get,  post...)
+
+app.use((err, req, res, next)=>{
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status ||'error';
+
+    res.status(err.statusCode).json({
+      status: err.status,
+      message:err.message
+    })
+});//Global Error handler middleware
 
 module.exports = app;
