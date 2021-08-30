@@ -10,17 +10,7 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-// //***************************** */
-//mongoose will take care of this
-// exports.checkBody = (req, res, next) => {
-//   if (!req.body.name || !req.body.price) {
-//     return res.status(400).json({
-//       status: 'fail',
-//       message: 'Missing Nameor Price',
-//     });
-//   }
-//   next();
-// };
+
 
 //we JSON to onvert to java script
 exports.getAllTours = catchAsync(async (req, res, next) => {
@@ -76,7 +66,7 @@ exports.creatTour = catchAsync(async (req, res, next) => {
 exports.updatTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
-    runValidator: true,
+    runValidators: true,
   });
 
   if (!tour) {

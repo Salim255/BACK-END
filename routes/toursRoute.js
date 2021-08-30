@@ -19,6 +19,7 @@ router
   .get(tourControler.aliasTopTours, tourControler.getAllTours);
 
 router.route('/').get(tourControler.getAllTours).post(tourControler.creatTour); // this the roote(/)
+
 router
   .route('/:id')
   .get(tourControler.getTour)
