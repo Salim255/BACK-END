@@ -6,6 +6,15 @@ const handleCastErrorDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleDuplicateFieldsDB = (err) => {
+ 
+  const value = err.keyValue.name;
+
+  const message = `Dublicate field value: ${value}. Please use another value `; //juste google reguler expression match text between quotes
+
+  return new AppError(message, 400);
+};
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -48,6 +57,10 @@ module.exports = (err, req, res, next) => {
 
     if (err.name === 'CastError') {
       error = handleCastErrorDB(error);
+    }
+    console.log('DOSHKA: ', error)
+    if (error.code === 11000) {
+      error = handleDuplicateFieldsDB(error);
     }
 
     sendErrorProd(error, res);
