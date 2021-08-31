@@ -8,12 +8,10 @@ dotenv.config({ path: './config.env' });
 
 //Start the server************************************
 
-
 const DB = process.env.DATABASE.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD
 );
-
 
 mongoose
   //.connect(process.env.DATABASE_LOCAL, {to connect to the local server
@@ -27,8 +25,17 @@ mongoose
     console.log('DB connection successful');
   }); //this connect will return a promese
 
-
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server =  app.listen(port, () => {//w'll use the server in order to close the server nicely when there are a promes rejection
   console.log(`App running on port ${port}...`);
 });
+
+//Globaly for all unhondled (promess) rejection error like when we couldnt connect to the DB. We called our safty net.
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  console.log('UNHANDLED REJECTION! Shutting down...');
+  server.close(() => {
+    process.exit(1); //To exit the app and the message will be: [nodemon] app crashed - waiting for file changes before starting...
+  });//
+  process.exit(1); //To exit the app and the message will be: [nodemon] app crashed - waiting for file changes before starting...
+}); //in order to listen to the event unhandeledjejection
