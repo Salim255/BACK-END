@@ -7,14 +7,17 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateFieldsDB = (err) => {
- 
   const value = err.keyValue.name;
-
-  const message = `Dublicate field value: ${value}. Please use another value `; //juste google reguler expression match text between quotes
-
+  const message = `Dublicate field value: ${value}. Please use another value `;
   return new AppError(message, 400);
 };
 
+const handleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors).map((el) => el.message); //in order to lood in object we use object.values will give us a list of object  and map() to work throuht the list f object
+ 
+  const message = `Invalid input data. ${errors.join('. ')}`;
+  return new AppError(message, 400);
+};
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -58,11 +61,12 @@ module.exports = (err, req, res, next) => {
     if (err.name === 'CastError') {
       error = handleCastErrorDB(error);
     }
-    console.log('DOSHKA: ', error)
+
     if (error.code === 11000) {
       error = handleDuplicateFieldsDB(error);
     }
 
+    if (err.name === 'ValidationError') error = handleValidationErrorDB(error);
     sendErrorProd(error, res);
   }
 };
