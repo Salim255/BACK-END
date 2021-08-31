@@ -1,4 +1,14 @@
 const mongoose = require('mongoose'); //To allow our Node code to access and interact with the a mongoDB database
+
+//Listing to uncaught exceptios
+
+process.on('uncaughtException', (err) => {
+  console.log('UNCAUGHT EXCEPTION! Shutting down...');
+  console.log(err.name, err.message);
+  //And shut down the server
+  process.exit(1);
+});
+
 const app = require('./app'); //this command will show all environmenlet variables in the cnso.
 //to creat the schema
 const dotenv = require('dotenv'); //we need this to connect our node app to the configue file
@@ -26,7 +36,8 @@ mongoose
   }); //this connect will return a promese
 
 const port = process.env.PORT || 3000;
-const server =  app.listen(port, () => {//w'll use the server in order to close the server nicely when there are a promes rejection
+const server = app.listen(port, () => {
+  //w'll use the server in order to close the server nicely when there are a promes rejection
   console.log(`App running on port ${port}...`);
 });
 
@@ -36,6 +47,7 @@ process.on('unhandledRejection', (err) => {
   console.log('UNHANDLED REJECTION! Shutting down...');
   server.close(() => {
     process.exit(1); //To exit the app and the message will be: [nodemon] app crashed - waiting for file changes before starting...
-  });//
+  }); //
   process.exit(1); //To exit the app and the message will be: [nodemon] app crashed - waiting for file changes before starting...
 }); //in order to listen to the event unhandeledjejection
+
