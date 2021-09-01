@@ -6,7 +6,7 @@ const router = express.Router();
 //4)ROUTES*******************************************************
 
 router.post('/signup', authControler.signup);//We allso have a special route for authenticaion
-
+router.post('/login', authControler.login);
 
 /////Routes in REST format
 router.route('/').get(userControler.getAllUsers).post(userControler.createUser);
