@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String,
   },
+
   password: {
     type: String,
     required: [true, 'Please provide a password'],
@@ -34,6 +35,7 @@ const userSchema = new mongoose.Schema({
       message: 'The password are not the same!',
     },
   },
+  passwordChangedAt: Date,
 });
 
 /************************ ENCRYPTING THE PASSWORD***********************/
@@ -63,7 +65,21 @@ userSchema.methods.correctPassword = async function (
 ) {
   return await bcrypt.compare(candidatePassword, userPassword); //return true or false
 };
+//An other instance methode
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedeTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    ); //To change the time to seconde
+  
 
+    return JWTTimestamp < changedeTimestamp; //If the JWT < changed that is means there are a change of the password after the token been isssued
+  }
+
+  //False means there are non change in the password
+  return false;
+};
 //Creating the model out of our schema
 const User = mongoose.model('User', userSchema);
 

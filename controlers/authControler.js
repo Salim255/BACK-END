@@ -1,3 +1,4 @@
+const { promisify } = require('util'); //We need this in ordrer to use promisify method with the verification function(async..)
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync'); //we wrappe all asynchronousfunction into this fucntion sothat we dont need to write the try catch block in each and evry fucntion
@@ -16,6 +17,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    passwordChangedAt: req.body.passwordChangedAt,
   }); //By doing this we only allow the data that we need to be entred by the user,(WE CONTROLING THE USERS INPUT)
 
   const token = signToken(newUser._id);
@@ -66,7 +68,6 @@ exports.protect = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(' ')[1];
   } //reading  token from the header
-  console.log(token);
 
   if (!token) {
     return next(
@@ -74,9 +75,28 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
   //2)Verification token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET); // We verify if someone manipulated the data OR the token has already expired), This promisify turn this function in async the return a promise, And the result of this promise will be the decoded payload from this JWT.
 
   //3)Check if user still exists
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return next(
+      new AppError(
+        'The user belonging to this token does no longer exist.',
+        401
+      )
+    );
+  }
 
   //4) Check if user changed password after the token was issued
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    //iat mean issued at
+    return next(
+      new AppError('User recently changed password! Please log in again', 401)
+    );
+  }
+  //GRANT ACCESS TO PROTECTED ROUTE
+  req.user = currentUser;//req.user will be passed to the nrxt middleware in case we want
+ 
   next();
 });

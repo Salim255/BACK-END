@@ -14,10 +14,15 @@ const handleDuplicateFieldsDB = (err) => {
 
 const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message); //in order to lood in object we use object.values will give us a list of object  and map() to work throuht the list f object
- 
+
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400);
 };
+
+
+const handleJsonWebTokenError = () =>new AppError('Invalid token. Please log in again!', '401');
+const handleJWTExpiredError = () => new AppError('Your token has expired. Please log in again!',401);
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -66,7 +71,13 @@ module.exports = (err, req, res, next) => {
       error = handleDuplicateFieldsDB(error);
     }
 
-    if (err.name === 'ValidationError') error = handleValidationErrorDB(error);
-    sendErrorProd(error, res);
+    if (err.name === 'ValidationError') error = handleValidationErrorDB();
+
+    if (err.name === 'JsonWebTokenError')
+      error = handleJsonWebTokenError(error);
+
+    if (err.name === 'TokenExpiredError') error= handleJWTExpiredError();
+
+     sendErrorProd(error, res);
   }
 };
