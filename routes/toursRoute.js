@@ -1,5 +1,6 @@
 const express = require('express');
 const tourControler = require('./../controlers/toursControler'); //an object of variables
+const authControler = require('./../controlers/authControler');
 
 //creating new router as a middlewer
 const router = express.Router();
@@ -18,7 +19,7 @@ router
   .route('/top-5-cheap')
   .get(tourControler.aliasTopTours, tourControler.getAllTours);
 
-router.route('/').get(tourControler.getAllTours).post(tourControler.creatTour); // this the roote(/)
+router.route('/').get(authControler.protect, tourControler.getAllTours).post(tourControler.creatTour); // this the roote(/)
 
 router
   .route('/:id')
