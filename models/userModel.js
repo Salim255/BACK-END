@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator'); //Its a validator coming from npm
 const bcrypt = require('bcryptjs');
@@ -17,10 +18,10 @@ const userSchema = new mongoose.Schema({
   photo: {
     type: String,
   },
-  role:{
-    type:String,
-    enum:['user', 'guide', 'lead-guide', 'admin'],
-    default:'user'
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
   },
   password: {
     type: String,
@@ -40,6 +41,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 /************************ ENCRYPTING THE PASSWORD***********************/
@@ -76,13 +79,28 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
       this.passwordChangedAt.getTime() / 1000,
       10
     ); //To change the time to seconde
-  
 
     return JWTTimestamp < changedeTimestamp; //If the JWT < changed that is means there are a change of the password after the token been isssued
   }
 
   //False means there are non change in the password
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {//w'll use this function in autentification controler
+  //The password reset token should basically be a random string
+  const resetToken = crypto.randomBytes(32).toString('hex'); //This token that w'll send to the user , so the user can use in ordrer to create the new password, it behave lik a password.
+
+  //Now we should encrypt this resetToken using buitl-in crypto module.
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  
+  console.log({resetToken}, this.passwordResetToken);  
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 minute in millseconds
+
+  return resetToken;
 };
 //Creating the model out of our schema
 const User = mongoose.model('User', userSchema);

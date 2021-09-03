@@ -19,6 +19,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role,
+    passwordResetToken: req.boy.passwordResetToken,
+    passwordResetExpires: req.body.passwordResetExpires,
   }); //By doing this we only allow the data that we need to be entred by the user,(WE CONTROLING THE USERS INPUT)
 
   const token = signToken(newUser._id);
@@ -113,3 +115,17 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  //1) Get user based on Posted Email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(new AppError('There is no user with email address.', 404));
+  }
+
+  //2)Generate the random reset token
+  const resetToken = user.createPasswordResetToken();
+  await user.save({ validateBeforeSave: false }); //In order the change that we made, and we should des activte all the validators in our schema be adding(validator:false)
+  //3)
+});
+exports.resetPassword = (req, res, next) => {};
