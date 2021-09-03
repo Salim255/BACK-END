@@ -18,6 +18,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
+    role: req.body.role,
   }); //By doing this we only allow the data that we need to be entred by the user,(WE CONTROLING THE USERS INPUT)
 
   const token = signToken(newUser._id);
@@ -96,7 +97,19 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
   //GRANT ACCESS TO PROTECTED ROUTE
-  req.user = currentUser;//req.user will be passed to the nrxt middleware in case we want
- 
+  req.user = currentUser; //req.user will be passed to the nrxt middleware in case we want
+
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    //roles is an array might be  ['admin', 'lead-guide']. role='user
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You don not have permission to perfom this action', 403)
+      );
+    }
+    next();
+  };
+};

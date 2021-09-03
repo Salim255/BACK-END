@@ -25,7 +25,7 @@ router
   .route('/:id')
   .get(tourControler.getTour)
   .patch(tourControler.updatTour)
-  .delete(tourControler.deleteTour);
+  .delete(authControler.protect, authControler.restrictTo('admin', 'lead-guide'), tourControler.deleteTour);
 // tourRouter.route('/api/v1/tours').get(getAllTours).post(creatTour);
 // tourRouter.route('/api/v1/tours/:id').get(getTour).patch(updatTour).delete(deleteTour);
 
