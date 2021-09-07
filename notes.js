@@ -7,3 +7,8 @@
 //npm install jsonwebtoken
 
 //The concept of loggin in a user it just to sign a JSON WEB TOKEN and then send it back to the client, and we only issure the Token in case the user is actually exist and the pasword is correct
+
+
+//NODE MAILLERE p:135
+
+//npm i nodemailer

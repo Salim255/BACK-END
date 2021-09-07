@@ -9,7 +9,7 @@ router.post('/signup', authControler.signup);//We allso have a special route for
 router.post('/login', authControler.login);
 
 router.post('/forgotPassword', authControler.forgotPassword);
-router.post('/resetPassword', authControler.resetPassword);
+router.patch('/resetPassword/:token', authControler.resetPassword);
 
 /////Routes in REST format
 router.route('/').get(userControler.getAllUsers).post(userControler.createUser);
