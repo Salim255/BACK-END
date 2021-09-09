@@ -11,10 +11,10 @@ const sendEmail = async (options) => {
 
   //The Transporter is always the  service we gonna use 
   const transporter = nodemailer.createTransport({
-    /*service: 'Gmail',if we use gmail or yahoo...
+    /*service: 'gmail',if we use gmail or yahoo...
     auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
+      user: process.env.EMAIL_USERNAME,your mail
+      pass: process.env.EMAIL_PASSWORD,your password
     }*/
     //But here we using Mailtrap service its special development service.
     host: process.env.EMAIL_HOST,
@@ -30,7 +30,7 @@ const sendEmail = async (options) => {
  
   const mailOption = {
     from: 'Salim  <hello@gmail.com>',//wher the emailcoming from
-    to: options.email,
+    to: options.email,//wher the email go
     subject: options.subject,
     text: options.message,
     //html:

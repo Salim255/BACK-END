@@ -64,8 +64,17 @@ userSchema.pre('save', async function (next) {
   next();
 }); //pre mean between geting the data and saving the data to the database
 
-/*****INSTANCE METHODE */
+
+userSchema.pre('save', function(next){
+  if(!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() -1000;//To ensure that the token is always created after the password has been changed. thats is we  give the passwordChanedAt the actual time - one sencend
+  next();
+});
+
+/*****INSTANCE METHODE middleware */
 //Its basically a methode gonna be available on all documents of certain collection
+
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
