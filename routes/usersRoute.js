@@ -13,6 +13,8 @@ router.patch('/resetPassword/:token', authControler.resetPassword);
 
 router.patch('/updateMyPassword',authControler.protect, authControler.updatePassword);
 
+router.patch('/updateMe',authControler.protect, userControler.updateMe);
+
 /////Routes in REST format
 router.route('/').get(userControler.getAllUsers).post(userControler.createUser);
 
