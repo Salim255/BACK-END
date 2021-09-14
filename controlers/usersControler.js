@@ -53,6 +53,15 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.deleteMe = catchAsync(async (req, res, next) =>{
+  await User.findByIdAndUpdate(req.user.id, {active:false});
+
+  res.status(204).json({
+    status:'Success',
+    data: null
+  });//204 for deleted
+})
+
 exports.getUser = (req, res) => {
   res.status(500).json({
     //500 means internal srever error

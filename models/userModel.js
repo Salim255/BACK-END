@@ -43,6 +43,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false, //to dont be shown on the user information
+  },
 });
 
 /************************ ENCRYPTING THE PASSWORD***********************/
@@ -64,11 +69,19 @@ userSchema.pre('save', async function (next) {
   next();
 }); //pre mean between geting the data and saving the data to the database
 
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
 
-userSchema.pre('save', function(next){
-  if(!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000; //To ensure that the token is always created after the password has been changed. thats is we  give the passwordChanedAt the actual time - one sencend
+  next();
+});
 
-  this.passwordChangedAt = Date.now() -1000;//To ensure that the token is always created after the password has been changed. thats is we  give the passwordChanedAt the actual time - one sencend
+//pre.. we call them query middlewar, (/^find/ => mean looking for word or strings that start by find)
+//
+userSchema.pre(/^find/, function (next) {
+  //And what w'll do here is before finding the document we want to remove that have active property siting to false
+  //this=> point to the current query => find.
+  this.find({ active: { $ne: false } });
   next();
 });
 
@@ -96,7 +109,8 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   return false;
 };
 
-userSchema.methods.createPasswordResetToken = function () {//w'll use this function in autentification controler
+userSchema.methods.createPasswordResetToken = function () {
+  //w'll use this function in autentification controler
   //The password reset token should basically be a random string
   const resetToken = crypto.randomBytes(32).toString('hex'); //This token that w'll send to the user , so the user can use in ordrer to create the new password, it behave lik a password.
 
@@ -105,8 +119,8 @@ userSchema.methods.createPasswordResetToken = function () {//w'll use this funct
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
-  
-  console.log({resetToken}, this.passwordResetToken);  
+
+  console.log({ resetToken }, this.passwordResetToken);
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //10 minute in millseconds
 
   return resetToken;
