@@ -13,8 +13,25 @@ const signToken = (id) => {
   }); //.sign(payload, ..)Payload is just an object for all the data.THIS ALL WE NEED TO LOGIN A NEW USER
 };
 
+///***COOKIES ***///
+//Cokies is basically just a small piece of text that a server can send to clients, then when the client receives a cookies, it will automatically store it and then automaticaaly send it back along with all future requests to the same server
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ), //convert to milsecond
+    //secure: true, //So cookie will only be sent on an encrypted connection
+    httpOnly: true, //So this will make so that the cookie cannot be accessed or modified in any way by the browser
+  };
+
+  res.cookie('jwt', token, cookieOptions); //This is how to send a cookie
+
+  if (process.env.NODE_ENV === 'production') {
+    cookieOptions.secure = true;
+  }
+  user.password = undefined;//To dnt show the password with the new document
+
   res.status(statusCode).json({
     status: 'Success',
     token,
