@@ -2,35 +2,35 @@ const express = require('express');
 //declaring morgan  middleware
 const morgan = require('morgan');
 //const { get } = require('http');
+const rateLimit = require('express-rate-limit');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controlers/errorControler');
+const tourRouter = require('./routes/toursRoute');
+const userRouter = require('./routes/usersRoute');
 
 const app = express();
 
-//1) Middlewares*************************************************************
+//1)Golobal Middlewares**************************************************************//
 
-// if (process.env.NODE_ENV === 'development') {
-//   //logger midleware
-
-console.log(process.env.NODE_ENV);
-// }
 if (process.env.NODE_ENV !== 'development') {
   app.use(morgan('dev'));
 }
 
-const tourRouter = require('./routes/toursRoute');
-const userRouter = require('./routes/usersRoute');
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many request from the this IP, please try again in an hour!',
+}); //Means we allow 100 request from the same IP in one hour, then we will get back un error massage
 
-//W e declare a midleware, its a function that can modify the incomming request data. It called  midleware because its stand between the request and the response. the midleware her is {express.json}
+app.use('/api', limiter); //With this we limit the access to our API route, so we apply this limiter to /api, by that we effect all the routes that start by /api.
+
 app.use(express.json());
-
-app.use(express.static(`${__dirname}/public`)); //in order to serve an static file
-//create myown midleware
+app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
   req.SalimTime = new Date().toISOString();
-  
+
   next();
 });
 

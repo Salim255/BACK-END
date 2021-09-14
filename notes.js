@@ -52,3 +52,5 @@
 //10)Keep user logged in with refresh tokens
 //11)Implement two-factor authentification
 //12)Prevent parameter polution causing Uncaught Exception
+
+//npm i express-rate-limit
