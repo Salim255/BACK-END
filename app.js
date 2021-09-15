@@ -2,7 +2,12 @@ const express = require('express');
 //declaring morgan  middleware
 const morgan = require('morgan');
 //const { get } = require('http');
+
+//**SECURITY**//
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+
+
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controlers/errorControler');
@@ -12,11 +17,15 @@ const userRouter = require('./routes/usersRoute');
 const app = express();
 
 //1)Golobal Middlewares**************************************************************//
+//Set Security HTTP header
+app.use(helmet());//see the documention on google
 
+//Development logging
 if (process.env.NODE_ENV !== 'development') {
   app.use(morgan('dev'));
 }
 
+//Limit request from same API
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
@@ -25,9 +34,15 @@ const limiter = rateLimit({
 
 app.use('/api', limiter); //With this we limit the access to our API route, so we apply this limiter to /api, by that we effect all the routes that start by /api.
 
-app.use(express.json());
+
+//Body parser, reading data from body into req.body
+app.use(express.json({limit:'10kb'}));//limit the body amount of data
+
+//Serving static files
 app.use(express.static(`${__dirname}/public`));
 
+
+//Test middleware
 app.use((req, res, next) => {
   req.SalimTime = new Date().toISOString();
 
