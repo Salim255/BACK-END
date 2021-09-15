@@ -6,7 +6,8 @@ const morgan = require('morgan');
 //**SECURITY**//
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
 
 const AppError = require('./utils/appError');
@@ -37,6 +38,12 @@ app.use('/api', limiter); //With this we limit the access to our API route, so w
 
 //Body parser, reading data from body into req.body
 app.use(express.json({limit:'10kb'}));//limit the body amount of data
+
+//Data sanitization against NOSQL query injection
+app.use(mongoSanitize());//This middleware look at the request body, the request query string, and also at Request.Params, and then it will filter out all the dollar signs and dots, by removing this, those operators nologer gonna work
+
+//Data santization against xss
+app.use(xss()); //This will clean any user input from malicious HTML code
 
 //Serving static files
 app.use(express.static(`${__dirname}/public`));
