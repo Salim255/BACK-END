@@ -13,7 +13,7 @@ const tourSchema = new mongoose.Schema(
       minlength: [
         10,
         'A tour name must have more or equal than  10 characters',
-      ]
+      ],
       //validate: [validator.isAlpha, 'Tour name must only contain charaters'], //its a fucntion to call ..,
     },
     slug: String,
@@ -35,8 +35,7 @@ const tourSchema = new mongoose.Schema(
         message: 'Difficulty is either:  easy or medium or  difficult',
       },
     },
-    ratingsAverage
-    : {
+    ratingsAverage: {
       type: Number,
       default: 4.5,
       min: [1, 'Rating must be above 1.0'],
@@ -84,6 +83,31 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      //
+      //we use GeoJson in order to specify geospecial data with mongoDB,
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates:[Number],
+        address:String,
+        description:String,
+        day:Number
+      },
+    ],
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

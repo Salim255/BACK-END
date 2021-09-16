@@ -67,3 +67,6 @@
 ////*****PARAMETERS POLUTIONS ****/////
 ///
 //npm i hpp
+
+////*****GEOSPATIAL DATAT****/////
+///It-s data that describes places on earth using longitude and latitude coordinates.
