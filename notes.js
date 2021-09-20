@@ -70,3 +70,7 @@
 
 ////*****GEOSPATIAL DATAT****/////
 ///It-s data that describes places on earth using longitude and latitude coordinates.
+
+
+//////***EMBADDING ***//////
+///Emadding user documents into tours documents 

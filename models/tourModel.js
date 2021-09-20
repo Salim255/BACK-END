@@ -1,5 +1,6 @@
 const mongoose = require('mongoose'); //To allow our Node code to access and interact with the a mongoDB database
 const slugify = require('slugify');
+const User = require('./userModel'); 
 //const validator = require('validator');
 //to creat the schema
 const tourSchema = new mongoose.Schema(
@@ -108,6 +109,7 @@ const tourSchema = new mongoose.Schema(
         day:Number
       },
     ],
+    guides: Array
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
@@ -123,6 +125,12 @@ tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true }); //console.log(this);//This point to the currently proccess document, so here we have access to the document that gonna be saved, so we can make any change befre to be saved or create
   next();
 }); //Pre means it gonna run before the actuel event('save') in this case
+
+tourSchema.pre('save' ,async function(next) {
+   const guidesPromises = this.guides.map( async id=> await User.findById(id));
+   this.guides = await Promise.all(guidesPromises);
+   next();
+});
 
 // tourSchema.pre('save', function(next){
 //     console.log('Will save document...');
