@@ -1,6 +1,6 @@
 const mongoose = require('mongoose'); //To allow our Node code to access and interact with the a mongoDB database
 const slugify = require('slugify');
-const User = require('./userModel'); 
+//const User = require('./userModel'); 
 //const validator = require('validator');
 //to creat the schema
 const tourSchema = new mongoose.Schema(
@@ -103,13 +103,21 @@ const tourSchema = new mongoose.Schema(
           default: 'Point',
           enum: ['Point'],
         },
-        coordinates:[Number],
-        address:String,
-        description:String,
-        day:Number
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
       },
     ],
-    guides: Array
+    //1)guides: Array//FOR EMBADING
+    
+    //2) Referancing
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId, //Means we expected type of each of the elemnts in the guides array to be a MongoDB ID
+        ref: 'User'
+      },
+    ],
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
@@ -126,11 +134,11 @@ tourSchema.pre('save', function (next) {
   next();
 }); //Pre means it gonna run before the actuel event('save') in this case
 
-tourSchema.pre('save' ,async function(next) {
+/* tourSchema.pre('save' ,async function(next) {//THIS CODE FOR EMBADING USESRS INTO TOURS
    const guidesPromises = this.guides.map( async id=> await User.findById(id));
    this.guides = await Promise.all(guidesPromises);
    next();
-});
+}); */
 
 // tourSchema.pre('save', function(next){
 //     console.log('Will save document...');
