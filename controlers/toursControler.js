@@ -10,8 +10,6 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-
-
 //we JSON to onvert to java script
 exports.getAllTours = catchAsync(async (req, res, next) => {
   const features = new APIFeatures(Tour.find(), req.query)
@@ -20,7 +18,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     .limitFields()
     .paginate();
   const tours = await features.query;
-  
+
   //SEND RESPONSE
   res.status(200).json({
     status: 'success',
@@ -36,7 +34,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 exports.getTour = catchAsync(async (req, res, next) => {
   const id = req.params.id;
   const tour = await Tour.findById(id);
-  if(!tour){
+  if (!tour) {
     return next(new AppError('No tour found with that ID', 404));
   }
   res.status(200).json({
@@ -70,7 +68,7 @@ exports.updatTour = catchAsync(async (req, res, next) => {
   });
 
   if (!tour) {
-      return next(new AppError('No tour found with that ID', 404));
+    return next(new AppError('No tour found with that ID', 404));
   }
   res.status(200).json({
     status: 'success',
@@ -84,9 +82,9 @@ exports.updatTour = catchAsync(async (req, res, next) => {
 
 exports.deleteTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndDelete(req.params.id);
-   if (!tour) {
-     return next(new AppError('No tour found with that ID', 404));
-   }
+  if (!tour) {
+    return next(new AppError('No tour found with that ID', 404));
+  }
   res.status(204).json({
     //for delte we use 204, means no contaits
     status: 'success',
@@ -129,7 +127,7 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getMonthlyPlan = catchAsync(async (req, res,next) => {
+exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   const year = req.params.year;
   const plan = await Tour.aggregate([
     {

@@ -161,6 +161,16 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
+
+
+tourSchema.pre(/^find/, function(next){
+  this.populate({//in query middleware we use this.---
+    path: 'guides',
+    select: '-__v -passwordChangedAt'
+  }); //Poplate in order to fillup the field guides inside the tour, ThisPopulate is afondamuntal tools for working with datas in mongoose
+ next();
+})
+
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query has took  ${Date.now() - this.start} milliseconds !`);
   //console.log(docs);
