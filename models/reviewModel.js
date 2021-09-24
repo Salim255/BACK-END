@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 //review /rating / creatdAt / ref to tour / ref to user
 
-const reviewShema = new mongoose.Schema(
+const reviewSchema = new mongoose.Schema(
   {
     review: {
       type: String,
@@ -32,6 +32,15 @@ const reviewShema = new mongoose.Schema(
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
-const Review = mongoose.model('Review', reviewShema);
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    //in query middleware we use this.---
+    path: 'tour',
+    select: 'name', //onley need tour name and nothing else
+  }).populate({ path: 'user', select: 'name photo' }); //Poplate in order to fillup the field guides inside the tour, ThisPopulate is afondamuntal tools for working with datas in mongoose
+  next();
+});
+
+const Review = mongoose.model('Review', reviewSchema);
 
 module.exports = Review;
