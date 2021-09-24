@@ -15,6 +15,7 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controlers/errorControler');
 const tourRouter = require('./routes/toursRoute');
 const userRouter = require('./routes/usersRoute');
+const reviewRouter = require('./routes/reviewsRoute');
 
 const app = express();
 
@@ -75,6 +76,8 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter);
 //o route with the app, we call this mounting a new router in the route
 app.use('/api/v1/users', userRouter);
+
+app.use('/api/v1/reviews', reviewRouter);//Mounting the router with the path '/api/v1/reviews' and the middleware reviewRouter
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404)); //when we pass an argument to the next(), exress will undrestand that htis an error so the application will go dirct to the global error handler
