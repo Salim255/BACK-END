@@ -29,15 +29,25 @@ const reviewSchema = new mongoose.Schema(
       required: [true, 'Review must belong tp a user.'],
     },
   },
-  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+  {
+    //passing options, getting the virual properties to the document/object
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
 reviewSchema.pre(/^find/, function (next) {
-  this.populate({
-    //in query middleware we use this.---
-    path: 'tour',
-    select: 'name', //onley need tour name and nothing else
-  }).populate({ path: 'user', select: 'name photo' }); //Poplate in order to fillup the field guides inside the tour, ThisPopulate is afondamuntal tools for working with datas in mongoose
+  // this.populate({
+  //   //in query middleware we use this.---
+  //   path: 'tour',
+  //   select: 'name', //onley need tour name and nothing else
+  // }).populate({ 
+  //   path: 'user', 
+  //   select: 'name photo' }); //Poplate in order to fillup the field guides inside the tour, ThisPopulate is afondamuntal tools for working with datas in mongoose
+
+  this.populate({ 
+    path: 'user', 
+    select: 'name photo' }); //Poplate in order to fillup the field guides inside the tour, ThisPopulate is afondamuntal tools for working with datas in mongoose
   next();
 });
 

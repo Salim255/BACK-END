@@ -1,6 +1,6 @@
 const mongoose = require('mongoose'); //To allow our Node code to access and interact with the a mongoDB database
 const slugify = require('slugify');
-//const User = require('./userModel'); 
+//const User = require('./userModel');
 //const validator = require('validator');
 //to creat the schema
 const tourSchema = new mongoose.Schema(
@@ -110,20 +110,34 @@ const tourSchema = new mongoose.Schema(
       },
     ],
     //1)guides: Array//FOR EMBADING
-    
+
     //2) Referancing
     guides: [
       {
         type: mongoose.Schema.ObjectId, //Means we expected type of each of the elemnts in the guides array to be a MongoDB ID
-        ref: 'User'
+        ref: 'User',
       },
     ],
   },
-  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+  {
+    //passing options, getting the virual properties to the document/object
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
 
 tourSchema.virtual('durationWeek').get(function () {
   return this.duration / 7;
+});
+
+//Virtual populate
+//Virtual populate
+//Virtual populate
+tourSchema.virtual('reviews', {
+    ref: 'Review',
+    foreignField: 'tour', //the tour field in the Review model
+    localField: '_id' //_id of the tour in the Tour model
+    //look for the _id of the tour in the tour field in review
 });
 
 //Document middleware: runs before  only .save() and .create() but not .insertMany()
@@ -161,15 +175,14 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-
-
-tourSchema.pre(/^find/, function(next){
-  this.populate({//in query middleware we use this.---
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    //in query middleware we use this.---
     path: 'guides',
-    select: '-__v -passwordChangedAt'
+    select: '-__v -passwordChangedAt',
   }); //Poplate in order to fillup the field guides inside the tour, ThisPopulate is afondamuntal tools for working with datas in mongoose
- next();
-})
+  next();
+});
 
 tourSchema.post(/^find/, function (docs, next) {
   console.log(`Query has took  ${Date.now() - this.start} milliseconds !`);
