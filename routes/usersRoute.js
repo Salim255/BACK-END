@@ -1,6 +1,7 @@
 const express = require('express');
 const userControler = require('./../controlers/usersControler'); //an object of variables
 const authControler = require('./../controlers/authControler');
+
 //creating new router as a middlewer
 const router = express.Router();
 //4)ROUTES*******************************************************
@@ -28,5 +29,6 @@ router
   .get(userControler.getUser)
   .patch(userControler.updateUser)
   .delete(userControler.deleteUser);
+
 
 module.exports = router;

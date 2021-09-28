@@ -50,7 +50,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
     role: req.body.role,
-    passwordResetToken: req.boy.passwordResetToken,
+    //passwordResetToken: req.boy.passwordResetToken,
     passwordResetExpires: req.body.passwordResetExpires,
   }); //By doing this we only allow the data that we need to be entred by the user,(WE CONTROLING THE USERS INPUT)
   createSendToken(newUser, 201, res);
