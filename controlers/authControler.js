@@ -83,6 +83,7 @@ exports.login = catchAsync(async (req, res, next) => {
 //****We create a middelware that check if the user is allowed to get access to the all tours */
 exports.protect = catchAsync(async (req, res, next) => {
   //1) Getting the token and check if its exist,
+  console.log('Hello from protect:\n');
   let token;
   if (
     req.headers.authorization &&
@@ -207,10 +208,10 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 exports.updatePassword = catchAsync(async (req, res, next) => {
   //1)Get the user from the collection
   const user = await User.findById(req.user.id).select('+password');
-  console.log(req);
+  
 
   //2)Check if POSTed current the password is correct
-  console.log('HERER WE ARE:::');
+  
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
     return next(new AppError('Your current password is wrong.', 401));
   }
