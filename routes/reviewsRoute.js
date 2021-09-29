@@ -1,7 +1,7 @@
 const express = require('express');
 const reviewControler = require('./../controlers/reviewControler'); //an object of variables
 //creating new router as a middlewer
-const router = express.Router({mergeParams: true});//we need to merge the parametre in order to get access to other router parameters inside reviewRouter
+const router = express.Router({mergeParams: true});//we need to merge the parametre in order to get access to ID from other route, in this case is reviewRouter
 const authControler = require('./../controlers/authControler');
 
 //POST/tour/66ef46r4vr/reviews
