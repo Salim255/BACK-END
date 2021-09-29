@@ -11,4 +11,5 @@ const authControler = require('./../controlers/authControler');
 router.route('/').get( reviewControler.getAllReviews).post(authControler.protect , authControler.restrictTo('user'),reviewControler.createReview); // this the roote(/) /=== '/api/v1/reviews'
 
 
+router.route('/:id').delete(reviewControler.deleteReview);
 module.exports = router; //To be used in app.js
