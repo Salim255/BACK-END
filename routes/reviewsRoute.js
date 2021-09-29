@@ -8,8 +8,9 @@ const authControler = require('./../controlers/authControler');
 //POST/ reviews
 //So if we get any route like of the obeve in tourRoute, then we will endup to the next route 
 
-router.route('/').get( reviewControler.getAllReviews).post(authControler.protect , authControler.restrictTo('user'),reviewControler.createReview); // this the roote(/) /=== '/api/v1/reviews'
+router.route('/').get( reviewControler.getAllReviews).post(authControler.protect , authControler.restrictTo('user'),reviewControler.setTourUserIds, reviewControler.createReview); // this the roote(/) /=== '/api/v1/reviews'
 
 
-router.route('/:id').delete(reviewControler.deleteReview);
+router.route('/:id').patch(reviewControler.updateReview).delete(reviewControler.deleteReview);
+
 module.exports = router; //To be used in app.js
