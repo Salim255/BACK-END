@@ -1,5 +1,4 @@
 const Tour = require('./../models/tourModel');
-const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
@@ -12,65 +11,17 @@ exports.aliasTopTours = (req, res, next) => {
 };
 
 //we JSON to onvert to java script
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const tours = await features.query;
-
-  //SEND RESPONSE
-  res.status(200).json({
-    status: 'success',
-    resultes: tours.length,
-    data: {
-      tours: tours,
-    },
-  });
-});
+exports.getAllTours = factory.getAll(Tour);
 //Using get to read data
-
 //geting variable, the variable can be var id or anything
-exports.getTour = catchAsync(async (req, res, next) => {
-  const id = req.params.id;
-  const tour = await Tour.findById(id).populate('reviews');
-  if (!tour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: tour,
-    },
-  });
-});
-
+exports.getTour = factory.getOne(Tour, {path: 'reviews'});//papulate option object
 //Using Post to creat
 // exports.creatTour = (req, res) => {
-
 exports.creatTour =factory.createOne(Tour)
-
 //to update params of un object we use patch
-
 exports.updatTour = factory.updateOne(Tour);
-
 //To delete un object form an API
 exports.deleteTour = factory.deleteOne(Tour);
-
-// exports.deleteTour = catchAsync(async (req, res, next) => {
-//   const tour = await Tour.findByIdAndDelete(req.params.id);
-//   if (!tour) {
-//     return next(new AppError('No tour found with that ID', 404));
-//   }
-//   res.status(204).json({
-//     //for delte we use 204, means no contaits
-//     status: 'success',
-//     data: {
-//       tour: null,
-//     },
-//   });
-// });
 
 //AGGREGATION PIPELINE
 exports.getTourStats = catchAsync(async (req, res, next) => {
