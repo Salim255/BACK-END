@@ -16,18 +16,18 @@ router.use('/:tourId/reviews', reviewRouter);//We said this tour router should u
 
 
 router.route('/tour-stats').get(tourControler.getTourStats);
-router.route('/monthly-plan/:year').get(tourControler.getMonthlyPlan);//:year, called URL parametre
+router.route('/monthly-plan/:year').get(authControler.protect, authControler.restrictTo('admin', 'lead-guide'),tourControler.getMonthlyPlan);//:year, called URL parametre
 
 router
   .route('/top-5-cheap')
   .get(tourControler.aliasTopTours, tourControler.getAllTours);
 
-router.route('/').get(authControler.protect, tourControler.getAllTours).post(tourControler.creatTour); // this the roote(/)
+router.route('/').get(tourControler.getAllTours).post(authControler.protect, authControler.restrictTo("admin", "lead-guide", 'guide'),tourControler.creatTour); // this the roote(/)
 
 router
   .route('/:id')
   .get(tourControler.getTour)
-  .patch(tourControler.updatTour)
+  .patch(authControler.protect, authControler.restrictTo('admin', 'lead-guide'),tourControler.updatTour)
   .delete(authControler.protect, authControler.restrictTo('admin', 'lead-guide'), tourControler.deleteTour);
 // tourRouter.route('/api/v1/tours').get(getAllTours).post(creatTour);
 // tourRouter.route('/api/v1/tours/:id').get(getTour).patch(updatTour).delete(deleteTour);
