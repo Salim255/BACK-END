@@ -18,8 +18,8 @@ exports.getAll = Model =>  catchAsync(async (req, res, next) => {
     .sort()
     .limitFields()
     .paginate();
+  //const doc = await features.query.explain();//explain((will show the process in the doc output))
   const doc = await features.query;
-
   //SEND RESPONSE
   res.status(200).json({
     status: 'success',

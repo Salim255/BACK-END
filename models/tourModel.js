@@ -126,6 +126,11 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+//tourSchema.index({price: 1});//with index w'll scan only the part that concerne our cherche, so good performance
+
+tourSchema.index({price: 1, ratingsAverage: -1});
+tourSchema.index({slug:1});
+
 tourSchema.virtual('durationWeek').get(function () {
   return this.duration / 7;
 });
