@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-/************************ ENCRYPTING THE PASSWORD***********************/
+// /************************ ENCRYPTING THE PASSWORD***********************/
 //W'll use mongoose middleware, and the one that we gonna use is a pre-save middleware
 userSchema.pre('save', async function (next) {
   //we need NEXT in order to call the next middleware
