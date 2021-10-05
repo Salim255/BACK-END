@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 //review /rating / creatdAt / ref to tour / ref to user
-
+const Tour = require('./tourModel');
 const reviewSchema = new mongoose.Schema(
   {
     review: {
@@ -49,6 +49,37 @@ reviewSchema.pre(/^find/, function (next) {
     path: 'user', 
     select: 'name photo' }); //Poplate in order to fillup the field guides inside the tour, ThisPopulate is afondamuntal tools for working with datas in mongoose
   next();
+});
+
+////Static method in mongoose
+
+reviewSchema.statics.calcAverageRatings  = async function(tourId){
+
+  const stats = await this.aggregate([
+     {
+       $match: {tour: tourId}
+     },
+     {
+       $group: {
+       _id:'$tour',
+       nRating: {$sum: 1},
+       avgRating: {$avg: '$rating'}
+     }
+    }
+   ]);//Instatic method like this, this keyword refare always to the current model
+
+   console.log(stats);
+
+   await Tour.findByIdAndUpdate(tourId, {
+     ratingsAverage: stats[0].nRating,
+     ratingsQuantity: stats[0].avgRating,
+   })
+};
+
+reviewSchema.post('save', function(){
+  //this point to the current review 
+  this.constructor.calcAverageRatings(this.tour);//Tour represent the tourId that we specified the aggragation  ;//this point to the current document(review) and constructor point to the model that creat this documnt, in this case is the tourModel
+ 
 });
 
 const Review = mongoose.model('Review', reviewSchema);
