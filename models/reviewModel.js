@@ -69,17 +69,40 @@ reviewSchema.statics.calcAverageRatings  = async function(tourId){
    ]);//Instatic method like this, this keyword refare always to the current model
 
    console.log(stats);
-
-   await Tour.findByIdAndUpdate(tourId, {
+  if(stats.length>0){
+      await Tour.findByIdAndUpdate(tourId, {
      ratingsAverage: stats[0].nRating,
      ratingsQuantity: stats[0].avgRating,
    })
+  }else{
+    await Tour.findByIdAndUpdate(tourId, {
+     ratingsAverage: 0,
+     ratingsQuantity: 4.5,
+   })
+  }
+  
 };
 
 reviewSchema.post('save', function(){
   //this point to the current review 
   this.constructor.calcAverageRatings(this.tour);//Tour represent the tourId that we specified the aggragation  ;//this point to the current document(review) and constructor point to the model that creat this documnt, in this case is the tourModel
  
+});
+
+
+//findByIdAndUpdate
+//findByIdAndDelete
+reviewSchema.pre(/^findOneAnd/,async function(next){
+  this.r = await this.findOne();//here this keyword is for the current query(findOneAnd). by this.findOne() w'll get the document currently been proccessed.
+  
+  next();
+});//In fact findOneAnd its just a shortand of //findByIdAndUpdate and 
+//findByIdAndDelete
+
+reviewSchema.post(/^findOneAnd/,async function(){
+  // await this.findOne(); donsnt work here because the query has already excuted
+    await this.r.constructor.calcAverageRatings(this.r.tour);
+    console.log(this.r);
 });
 
 const Review = mongoose.model('Review', reviewSchema);
