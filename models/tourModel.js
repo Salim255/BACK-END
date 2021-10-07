@@ -196,12 +196,13 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
-//AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); //we use unshift to add to the bigigning of an array
-  console.log(this.pipeline()); //this point to the current aggrigation object
-  next();
-});
+// //AGGREGATION MIDDLEWARE
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); //we use unshift to add to the bigigning of an array
+//   console.log(this.pipeline()); //this point to the current aggrigation object
+//   next();
+// });
+
 //to creat the model using the schema
 const Tour = mongoose.model('Tour', tourSchema); //we alq¡ways use uppercase in model name and variables
 

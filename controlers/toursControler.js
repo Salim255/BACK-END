@@ -123,3 +123,41 @@ exports.getToursWithin =catchAsync(async (req, res, next) =>{
   })
 }) ;
 
+
+exports.getDistances = catchAsync(async(req, res, next)=>{
+  const {latlng, unit} = req.params;
+  const [lat,lng] = latlng.split(',');//latetude and longtude
+  const multiplier =unit === 'mi'? 0.000621371 : 0.001;
+  if(!lat || !lng){
+    next(new AppError('Please provide latitude and longitude in the format lat, lng'), 400);
+  }
+  
+  //In order to calculation we always need the aggregationpinpline
+ const distances = await Tour.aggregate([
+   {
+     $geoNear:{
+       near: {
+         type: 'Point',
+         coordinates:[lng*1, lat *1]
+       },
+       distanceField:'distance', //where all the the calculated distances will be stored 
+       distanceMultiplier: multiplier//in order to convert the distance from metrs to mi
+     },//alway need to be the first,and geoNear always neeed a start location, here we use the stratLocation that defined in tourModel, but if there more than startLocation, we need to specify the name for the GeoNear
+    
+   },
+   { $project: {//in order to have only the distance and the name of the tour
+       distance: 1,
+       name: 1
+     }
+  }
+   
+ ]);
+    res.status(200).json({
+    status:'success',
+    
+    data:{
+      data: distances
+    }
+  })
+  
+})

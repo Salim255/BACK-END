@@ -26,6 +26,8 @@ router
 //or /tours-within/:distance/center/:-40,45/unit/mi
 router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(tourControler.getToursWithin);
 
+//calculate the distance for all the tours from a certains points
+router.route('/distances/:latlng/unit/:unit').get(tourControler.getDistances);
 
 router.route('/').get(tourControler.getAllTours).post(authControler.protect, authControler.restrictTo("admin", "lead-guide", 'guide'),tourControler.creatTour); // this the roote(/)
 
