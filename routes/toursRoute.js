@@ -22,6 +22,11 @@ router
   .route('/top-5-cheap')
   .get(tourControler.aliasTopTours, tourControler.getAllTours);
 
+// /tour-within?disatance=233&center=-40,45&unit=mi
+//or /tours-within/:distance/center/:-40,45/unit/mi
+router.route('/tours-within/:distance/center/:latlng/unit/:unit').get(tourControler.getToursWithin);
+
+
 router.route('/').get(tourControler.getAllTours).post(authControler.protect, authControler.restrictTo("admin", "lead-guide", 'guide'),tourControler.creatTour); // this the roote(/)
 
 router
