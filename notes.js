@@ -79,3 +79,11 @@
 
 
 ////***POPULATING IN ORDER TO GET ACCESS TO REFRENCING TOUR GUIDS USING IDs ***////
+
+////****SECTION12 Server-side rendering with Pug Templates ****//////
+///Lets start by setting up our templating engine in express, which will then allow us torender out websits using simple templates
+
+/////Here we use PUG as a template engie rather than HANDELBARS or others thats because Pug is most commonly used with express
+
+///1( tell EXPRESS what template engine we gonna use
+///2)npm install pug
