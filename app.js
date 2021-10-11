@@ -83,6 +83,19 @@ app.get('/', (req, res) => {
     user: 'Salim',
   }); //it will intothe views folder and then get the template with the name  base fromit, all this becauseofthePUG engine, inorder to pass some data inthe template, allwe need is to define an object with variables called locals in the pug file
 }); //we always use get to render page in the browser, with (/) the root of the website
+
+app.get('/overview', (req, res) =>{
+  res.status(200).render('overview', {
+    title: 'All Tours'
+  });
+})
+
+app.get('/tour', (req, res) => {
+  res.status(200).render('tour', {
+    title: 'The Forset Hiker Tour',
+  });
+});
+
 //In order to connect these two route with the app, we call this mounting a new router in the route
 app.use('/api/v1/tours', tourRouter);
 //o route with the app, we call this mounting a new router in the route
