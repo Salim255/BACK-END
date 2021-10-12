@@ -19,7 +19,7 @@ exports.getTour = catchAsync(async (req, res) => {
     fields: 'review rating user', //only field that we need
   });
   //2) Building the template
-  console.log(tour);
+  
   //3)Render template using data from 1
   res.status(200).render('tour', {
     title: 'The Forset Hiker Tour',
