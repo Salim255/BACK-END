@@ -9,6 +9,9 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+
+//in order to get access to the cookies that in our request we need. In Express we need to install certains middleware (npm i cookie-parser)
+const cookieParser = require('cookie-parser');
 const hpp = require('hpp');
 
 const AppError = require('./utils/appError');
@@ -17,6 +20,7 @@ const tourRouter = require('./routes/toursRoute');
 const userRouter = require('./routes/usersRoute');
 const reviewRouter = require('./routes/reviewsRoute');
 const viewRouter = require('./routes/viewsRoute')
+
 const app = express();
 
 //PUG ENGINE tell Express the template that we gonna use
@@ -50,6 +54,8 @@ app.use('/api', limiter); //With this we limit the access to our API route, so w
 //Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //limit the body amount of data
 
+app.use(cookieParser());//Parseing or reading the data from the cookie
+
 //Data sanitization against NOSQL query injection
 app.use(mongoSanitize()); //This middleware look at the request body, the request query string, and also at Request.Params, and then it will filter out all the dollar signs and dots, by removing this, those operators nologer gonna work
 
@@ -73,7 +79,7 @@ app.use(
 //Test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-
+  console.log(req.cookies);
   next();
 });
 

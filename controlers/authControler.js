@@ -91,6 +91,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(' ')[1];
   } //reading  token from the header
+  else if(req.cookies.jwt){
+    token = req.cookies.jwt;
+  }//by this we can olso athuntiquet a user by token send in a cookies, not only the autherisation header
 
   if (!token) {
     return next(

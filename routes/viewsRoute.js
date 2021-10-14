@@ -1,9 +1,10 @@
 const express = require('express');
 const viewsControler = require('../controlers/viewsControler');
+const authControler = require('../controlers/authControler');
 const router = express.Router();
 
 router.get('/', viewsControler.getOverview);
-router.get('/tour/:slug', viewsControler.getTour);
+router.get('/tour/:slug',authControler.protect, viewsControler.getTour);
 
 router.get('/login', viewsControler.getLoginForm);
 
