@@ -30,7 +30,7 @@ const createSendToken = (user, statusCode, res) => {
   if (process.env.NODE_ENV === 'production') {
     cookieOptions.secure = true;
   }
-  user.password = undefined;//To dnt show the password with the new document
+  user.password = undefined; //To dnt show the password with the new document
 
   res.status(statusCode).json({
     status: 'Success',
@@ -42,7 +42,6 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
- 
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -91,9 +90,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(' ')[1];
   } //reading  token from the header
-  else if(req.cookies.jwt){
+  else if (req.cookies.jwt) {
     token = req.cookies.jwt;
-  }//by this we can olso athuntiquet a user by token send in a cookies, not only the autherisation header
+  } //by this we can olso athuntiquet a user by token send in a cookies, not only the autherisation header
 
   if (!token) {
     return next(
@@ -123,6 +122,36 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
   //GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser; //req.user will be passed to the nrxt middleware in case we want
+
+  next();
+});
+
+//Only for rendered pages, no errors!
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    //1) Verify the token
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
+    
+    //2)Check if user still exist
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next();
+    }
+    
+    //3)Check if the user changed password after token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+
+    //THERE IS A LOGGED IN USER
+    //Now we make this user accsssible to our template, each and every pug template will have access to response.locals and what ever we put there  will then be a variable inside of these template, so its litle bite like passing data inside template using render()
+    res.locals.user =  currentUser;
+    
+    return next();
+  }
 
   next();
 });
@@ -211,10 +240,9 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 exports.updatePassword = catchAsync(async (req, res, next) => {
   //1)Get the user from the collection
   const user = await User.findById(req.user.id).select('+password');
-  
 
   //2)Check if POSTed current the password is correct
-  
+
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
     return next(new AppError('Your current password is wrong.', 401));
   }
