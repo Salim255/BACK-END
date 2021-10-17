@@ -87,3 +87,10 @@
 
 ///1( tell EXPRESS what template engine we gonna use
 ///2)npm install pug
+
+////npm i cookie-parser
+////npm i parcel-bundler@1 --save-dev
+////npm i axios@0.18.0
+
+////npm i @babel/polyfill@7.4.4
+//Which will make some of the newer JavaScript freatures work in older browser as well
