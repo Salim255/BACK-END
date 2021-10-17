@@ -10,6 +10,7 @@ const router = express.Router();//This router here is juste lik a mini app so we
 
 router.post('/signup', authControler.signup); //We allso have a special route for authenticaion
 router.post('/login', authControler.login);
+router.get('/logout', authControler.logout);
 router.post('/forgotPassword', authControler.forgotPassword);
 router.patch('/resetPassword/:token', authControler.resetPassword);
 

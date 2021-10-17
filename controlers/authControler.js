@@ -22,7 +22,7 @@ const createSendToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ), //convert to milsecond
     //secure: true, //So cookie will only be sent on an encrypted connection
-    httpOnly: true, //So this will make so that the cookie cannot be accessed or modified in any way by the browser
+    httpOnly: true, //So this will make so that the cookie cannot be accessed or modified in any way by the browser, its just a super secure way off storing cookies
   };
 
   res.cookie('jwt', token, cookieOptions); //This is how to send a cookie
@@ -79,10 +79,21 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+//In order to delete the cookies, we creat a new cookie with new token that doesnt match any user
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'logout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+  });
+};
+
 //****We create a middelware that check if the user is allowed to get access to the all tours */
 exports.protect = catchAsync(async (req, res, next) => {
   //1) Getting the token and check if its exist,
-  console.log('Hello from protect:\n');
   let token;
   if (
     req.headers.authorization &&
@@ -127,34 +138,38 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 //Only for rendered pages, no errors!
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
+exports.isLoggedIn = async (req, res, next) => {
   if (req.cookies.jwt) {
-    //1) Verify the token
-    const decoded = await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET
-    );
-    
-    //2)Check if user still exist
-    const currentUser = await User.findById(decoded.id);
-    if (!currentUser) {
-      return next();
-    }
-    
-    //3)Check if the user changed password after token was issued
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
-      return next();
-    }
+    try {
+      //1) Verify the token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
 
-    //THERE IS A LOGGED IN USER
-    //Now we make this user accsssible to our template, each and every pug template will have access to response.locals and what ever we put there  will then be a variable inside of these template, so its litle bite like passing data inside template using render()
-    res.locals.user =  currentUser;
-    
-    return next();
+      //2)Check if user still exist
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+
+      //3)Check if the user changed password after token was issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      //THERE IS A LOGGED IN USER
+      //Now we make this user accsssible to our template, each and every pug template will have access to response.locals and what ever we put there  will then be a variable inside of these template, so its litle bite like passing data inside template using render()
+      res.locals.user = currentUser;
+
+      return next();
+    } catch (err) {
+      return next();
+    }
   }
 
   next();
-});
+};
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
