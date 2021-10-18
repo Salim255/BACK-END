@@ -53,7 +53,7 @@ app.use('/api', limiter); //With this we limit the access to our API route, so w
 
 //Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //limit the body amount of data
-
+app.use(express.urlencoded({extended: true, limit: '10kb'}));//The way that the form send data to the server is called URLENODED, se here we need that middlewre to parse data comming from a URL ncoded form. then extend: True will allow us to pass some more complex data
 app.use(cookieParser());//Parseing or reading the data from the cookie
 
 //Data sanitization against NOSQL query injection
