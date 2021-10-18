@@ -94,6 +94,7 @@ exports.logout = (req, res) => {
 //****We create a middelware that check if the user is allowed to get access to the all tours */
 exports.protect = catchAsync(async (req, res, next) => {
   //1) Getting the token and check if its exist,
+  
   let token;
   if (
     req.headers.authorization &&
@@ -133,7 +134,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
   //GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser; //req.user will be passed to the nrxt middleware in case we want
-
+  //Now we make this user accsssible to our template, each and every pug template will have access to response.locals and what ever we put there  will then be a variable inside of these template, so its litle bite like passing data inside template using render()
+  
+  res.locals.user = currentUser;
   next();
 });
 
@@ -161,7 +164,6 @@ exports.isLoggedIn = async (req, res, next) => {
       //THERE IS A LOGGED IN USER
       //Now we make this user accsssible to our template, each and every pug template will have access to response.locals and what ever we put there  will then be a variable inside of these template, so its litle bite like passing data inside template using render()
       res.locals.user = currentUser;
-
       return next();
     } catch (err) {
       return next();
