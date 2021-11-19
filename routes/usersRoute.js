@@ -1,6 +1,8 @@
 const express = require('express');
+const multer = require('multer');
 const userControler = require('./../controlers/usersControler'); //an object of variables
 const authControler = require('./../controlers/authControler');
+const upload = multer({dest: 'public/img/users'});
 
 //creating new router as a middlewer
 const router = express.Router();//This router here is juste lik a mini app so we cans use it lik: router.use(enymidleware)
@@ -22,7 +24,7 @@ router.patch(
 );
 
 router.get('/me', userControler.getMe, userControler.getUser);//authControler.protect  =>to verifie that the user is loged in, and will addd the ser to the current request, then we can read the id fro the current user  
-router.patch('/updateMe',  userControler.updateMe);
+router.patch('/updateMe', upload.single('photo'), userControler.updateMe);
 router.delete('/deleteMe',  userControler.deleteMe);
 
 
