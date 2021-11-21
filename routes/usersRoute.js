@@ -24,7 +24,7 @@ router.patch(
 );
 
 router.get('/me', userControler.getMe, userControler.getUser);//authControler.protect  =>to verifie that the user is loged in, and will addd the ser to the current request, then we can read the id fro the current user  
-router.patch('/updateMe', userControler.uploadUserPhoto, userControler.updateMe);
+router.patch('/updateMe', userControler.uploadUserPhoto,userControler.resizeUserPhoto, userControler.updateMe);
 router.delete('/deleteMe',  userControler.deleteMe);
 
 

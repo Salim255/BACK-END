@@ -97,4 +97,7 @@
 
 
 
-///npm install multer
+///npm install multer >>> for uploding files
+
+
+////npm install sharp >>>> to resize the photo

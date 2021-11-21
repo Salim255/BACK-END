@@ -1,10 +1,13 @@
+const multer = require('multer');
+const sharp = require('sharp');//For resizing images
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
-const multer = require('multer');
 
-const multerSrorage = multer.diskStorage(
+
+
+/* const multerSrorage = multer.diskStorage(
   { 
     destination:  (req, file, cb) =>
         {
@@ -17,6 +20,8 @@ const multerSrorage = multer.diskStorage(
         }
   }
   );//cb is just a call back function
+ */
+const multerSrorage = multer.memoryStorage();//to store the image in the meomry and not on the disk, then will be avalble in the buffer 
 
   const multerFilter = (req, file, cb) =>{
     if(file.mimetype.startsWith('image')){
@@ -34,6 +39,20 @@ const multerSrorage = multer.diskStorage(
 
 //const upload = multer({dest: 'public/img/users'});
 exports.uploadUserPhoto = upload.single('photo');
+
+//Rsisivg the uploaded image
+exports.resizeUserPhoto = (req, res, next) =>{
+  if(!req.file){
+    return next();
+  }
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  sharp(req.file.buffer).resize(500,500).toFormat('jpeg').jpeg({quality: 90}).toFile(`public/img/users/${req.file.filename}`);//Like this we can easly read the image from the memory``
+
+  next();
+}
+
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
