@@ -14,6 +14,7 @@ const xss = require('xss-clean');
 //in order to get access to the cookies that in our request we need. In Express we need to install certains middleware (npm i cookie-parser)
 const cookieParser = require('cookie-parser');
 const hpp = require('hpp');
+const cors = require('cors');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controlers/errorControler');
@@ -31,6 +32,15 @@ app.set('views', path.join(__dirname, 'views')); //this will create the path to 
 
 //1)Golobal Middlewares**************************************************************//
 
+//Implement Cors
+app.use(cors());//access-control-allow *
+
+/* app.use(cors({
+  origin:'https://www.localhost:8000'
+}));//access-control-allow to 'https://www.localhost:8000' */
+
+app.options('*', cors());
+//app.options('/api/v1/tours/:id', cors());for some
 //Serving static files
 //app.use(express.static(`${__dirname}/public`));
 app.use(express.static(path.join(__dirname, 'public')));
